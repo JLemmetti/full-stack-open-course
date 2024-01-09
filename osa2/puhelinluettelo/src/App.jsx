@@ -15,18 +15,62 @@ const App = () => {
     })
   }, [])
 
-  const addNumber = (event) => {
+  const addOrUpdatePerson = (event) => {
     event.preventDefault()
 
-    if (persons.map((person) => person.name).some((name) => name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+    const targetPerson = {
+      name: newName,
+      number: newNumber,
+    }
 
+    if (
+      persons
+        .map((person) => person.name)
+        .some((name) => name === targetPerson.name)
+    ) {
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        updatePerson(targetPerson)
+        return
+      }
+      alert(`${newName} is already added to phonebook`)
       return
     }
 
-    setPersons(persons.concat({ name: newName, number: newNumber }))
-    setNewName('')
-    setNewNumber('')
+    addPerson(targetPerson)
+  }
+
+  const addPerson = (person) => {
+    personService.create(person).then((returnedPerson) => {
+      setPersons(persons.concat(returnedPerson))
+      setNewName('')
+      setNewNumber('')
+    })
+  }
+
+  const updatePerson = (updatedPerson) => {
+    const jepa = persons.find((person) => person.name === updatedPerson.name)
+
+    personService.update(jepa.id, updatedPerson).then((updatedPerson) => {
+      setPersons(
+        persons.map((person) =>
+          person.id !== jepa.id ? person : updatedPerson
+        )
+      )
+      setNewName('')
+      setNewNumber('')
+    })
+  }
+
+  const removePerson = (person) => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService.remove(person.id).then((returnedPerson) => {
+        setPersons(persons.filter((person) => person.id !== returnedPerson.id))
+      })
+    }
   }
 
   const handleFilterChange = (event) => {
@@ -52,14 +96,14 @@ const App = () => {
         Filter shown with <input type="text" onChange={handleFilterChange} />
       </p>
       <NewPerson
-        addNumber={addNumber}
+        addOrUpdatePerson={addOrUpdatePerson}
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}
         handleNumberChange={handleNumberChange}
       />
 
-      <Numbers persons={filteredPersons} />
+      <Numbers persons={filteredPersons} removePerson={removePerson} />
     </div>
   )
 }

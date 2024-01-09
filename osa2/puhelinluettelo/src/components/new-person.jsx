@@ -1,11 +1,11 @@
 const NewPerson = ({
-  addNumber,
+  addOrUpdatePerson,
   newName,
   handleNameChange,
   newNumber,
   handleNumberChange,
 }) => (
-  <form onSubmit={addNumber}>
+  <form onSubmit={addOrUpdatePerson}>
     <div>
       name: <input value={newName} onChange={handleNameChange} />
     </div>
