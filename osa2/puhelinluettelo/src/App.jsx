@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import NewPerson from './components/new-person'
+import Notification from './components/notification'
 import Numbers from './components/numbers'
 import personService from './services/persons'
 
@@ -8,12 +9,23 @@ const App = () => {
   const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [notification, setNotification] = useState(null)
+  const [notificationType, setNotificationType] = useState('notification')
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
       setPersons(initialPersons)
     })
   }, [])
+
+  const notify = (type, message) => {
+    setNotificationType(type)
+
+    setNotification(message)
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
 
   const addOrUpdatePerson = (event) => {
     event.preventDefault()
@@ -48,20 +60,26 @@ const App = () => {
       setPersons(persons.concat(returnedPerson))
       setNewName('')
       setNewNumber('')
+
+      notify('notification', `Added ${person.name}`)
     })
   }
 
   const updatePerson = (updatedPerson) => {
-    const jepa = persons.find((person) => person.name === updatedPerson.name)
+    const personId = persons.find(
+      (person) => person.name === updatedPerson.name
+    ).id
 
-    personService.update(jepa.id, updatedPerson).then((updatedPerson) => {
+    personService.update(personId, updatedPerson).then((updatedPerson) => {
       setPersons(
         persons.map((person) =>
-          person.id !== jepa.id ? person : updatedPerson
+          person.id !== personId ? person : updatedPerson
         )
       )
       setNewName('')
       setNewNumber('')
+
+      notify('notification', `Updated ${updatedPerson.name}`)
     })
   }
 
@@ -69,6 +87,8 @@ const App = () => {
     if (window.confirm(`Delete ${person.name}?`)) {
       personService.remove(person.id).then((returnedPerson) => {
         setPersons(persons.filter((person) => person.id !== returnedPerson.id))
+
+        notify('notification', `Removed ${returnedPerson.name}`)
       })
     }
   }
@@ -92,6 +112,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={notification} type={notificationType} />
       <p>
         Filter shown with <input type="text" onChange={handleFilterChange} />
       </p>
