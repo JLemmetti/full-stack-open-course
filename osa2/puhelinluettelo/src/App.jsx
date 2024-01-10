@@ -70,17 +70,27 @@ const App = () => {
       (person) => person.name === updatedPerson.name
     ).id
 
-    personService.update(personId, updatedPerson).then((updatedPerson) => {
-      setPersons(
-        persons.map((person) =>
-          person.id !== personId ? person : updatedPerson
+    personService
+      .update(personId, updatedPerson)
+      .then((updatedPerson) => {
+        setPersons(
+          persons.map((person) =>
+            person.id !== personId ? person : updatedPerson
+          )
         )
-      )
-      setNewName('')
-      setNewNumber('')
+        setNewName('')
+        setNewNumber('')
 
-      notify('notification', `Updated ${updatedPerson.name}`)
-    })
+        notify('notification', `Updated ${updatedPerson.name}`)
+      })
+      .catch(() => {
+        setPersons(persons.filter((person) => person.id !== personId))
+
+        notify(
+          'error',
+          `Information of ${updatedPerson.name} has already been removed from server`
+        )
+      })
   }
 
   const removePerson = (person) => {
