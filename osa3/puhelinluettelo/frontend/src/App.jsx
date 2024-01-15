@@ -93,12 +93,12 @@ const App = () => {
       })
   }
 
-  const removePerson = (person) => {
-    if (window.confirm(`Delete ${person.name}?`)) {
-      personService.remove(person.id).then((returnedPerson) => {
-        setPersons(persons.filter((person) => person.id !== returnedPerson.id))
+  const removePerson = (removedPerson) => {
+    if (window.confirm(`Delete ${removedPerson.name}?`)) {
+      personService.remove(removedPerson.id).then(() => {
+        setPersons(persons.filter((person) => person.id !== removedPerson.id))
 
-        notify('notification', `Removed ${returnedPerson.name}`)
+        notify('notification', `Removed ${removedPerson.name}`)
       })
     }
   }
