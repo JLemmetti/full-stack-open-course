@@ -26,7 +26,7 @@ if (name && number) {
     name,
     number,
   })
-  person.save().then((result) => {
+  person.save().then(() => {
     console.log(`Person saved: ${name}`)
     mongoose.connection.close()
   })

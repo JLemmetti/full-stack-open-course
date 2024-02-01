@@ -32,9 +32,6 @@ const infoPageTemplate = (persons, time) => `
 <p>${time}</p>
 `
 
-const generateId = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min
-
 app.get('/info', (request, response) => {
   Person.find({}).then((persons) => {
     response.send(infoPageTemplate(persons, new Date()))
