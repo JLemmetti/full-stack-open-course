@@ -26,7 +26,7 @@ app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :body')
 )
 
-const infoPageTemplate = (time) => `
+const infoPageTemplate = (persons, time) => `
 <h1>Phonebook</h1>
 <p>phonebook has info for ${persons.length} people</p>
 <p>${time}</p>
@@ -36,7 +36,9 @@ const generateId = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
 app.get('/info', (request, response) => {
-  response.send(infoPageTemplate(new Date()))
+  Person.find({}).then((persons) => {
+    response.send(infoPageTemplate(persons, new Date()))
+  })
 })
 
 app.get('/api/persons', (request, response) => {
