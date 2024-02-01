@@ -56,13 +56,16 @@ const App = () => {
   }
 
   const addPerson = (person) => {
-    personService.create(person).then((returnedPerson) => {
-      setPersons(persons.concat(returnedPerson))
-      setNewName('')
-      setNewNumber('')
+    personService
+      .create(person)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
 
-      notify('notification', `Added ${person.name}`)
-    })
+        notify('notification', `Added ${person.name}`)
+      })
+      .catch((error) => notify('error', error.response.data.error))
   }
 
   const updatePerson = (updatedPerson) => {
@@ -83,13 +86,8 @@ const App = () => {
 
         notify('notification', `Updated ${updatedPerson.name}`)
       })
-      .catch(() => {
-        setPersons(persons.filter((person) => person.id !== personId))
-
-        notify(
-          'error',
-          `Information of ${updatedPerson.name} has already been removed from server`
-        )
+      .catch((error) => {
+        notify('error', error.response.data.error)
       })
   }
 
